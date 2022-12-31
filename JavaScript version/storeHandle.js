@@ -2,15 +2,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebas
 import { getFirestore, doc, setDoc, collection, addDoc, updateDoc, serverTimestamp, deleteDoc, getDoc, getDocs, where, query, orderBy }
     from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
-// 1. write a new document to firestore
-
-// 2. read a document from firestore
-
-// 3. delete a document from firestore
-
-// 4. update a document from firestore
-
-
 export class FBStore {
     constructor(firebaseConfig) {
         this.app = initializeApp(firebaseConfig);
@@ -106,22 +97,6 @@ export class FBStore {
                 q = query(collection(this.db, collectionName), ...queriesList, orderBy(order[0], order[1]));
             }
         }
-
-
-
-        // 1. bacic query
-        // const q = query(collection(this.db, "users"), where("id", "==", "1111"));
-        //const q = query(collection(this.db, "users"), where("age", ">=", 20));
-
-        // 2. compound  query
-        //const q = query(collection(this.db, "users"), where("age", ">=", 20), where("age", "<=", 30));
-        //const q = query(collection(this.db, collectionName), where("name", "in", ["innis", "用户4"]));
-
-        // 3. array-contains query
-        //const q = query(collection(this.db, "users"), where("list", "array-contains", 1));
-        //const q = query(collection(this.db, "users"), where("list", "array-contains-any", [1, 2]));
-
-
 
         const querySnapshot = await getDocs(q);
         const data = this.snapshotToArray(querySnapshot);
