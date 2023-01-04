@@ -1,202 +1,80 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-import { getFirestore, doc, setDoc, collection, addDoc, updateDoc, serverTimestamp, deleteDoc, getDoc, getDocs, where, query, orderBy }
-    from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject, listAll }
+    from "https://www.gstatic.com/firebasejs/9.15.0/firebase-storage.js";
+import firebaseConfig from "./config.js";
 
-// 1. write a new document to firestore
 
-// 2. read a document from firestore
-
-// 3. delete a document from firestore
-
-// 4. update a document from firestore
-
+// for npm
+// import { initializeApp } from 'firebase/app'
+// import { getStorage  } from "firebase/storage";
 
 export class FBStorage {
-    constructor(firebaseConfig) {
+    constructor() {
         this.app = initializeApp(firebaseConfig);
-        this.db = getFirestore(this.app);
-        this.isCustomeId = true; // true: customeId / false: autoId
-        this.isMerge = true; // true: merge / false: overwrite
+        this.storage = getStorage(this.app);
         this.debug = false;
     }
 
-    async write(collectionName, document, documentID) {
-        if (documentID === undefined) documentID = ""; else documentID = documentID.toString();
-        this.validateThreeParams(collectionName, document, documentID);
 
-        if (arguments.length === 2) {
-            //  autoId
-            const docRef = await addDoc(collection(this.db, collectionName), { ...document });
-            if (this.debug) console.log("Document written with ID: ", docRef.id);
-            return docRef.id;
-        }
-        else if (arguments.length === 3) {
-            //  documentID  and merge / overwrite
-            setDoc(doc(this.db, collectionName, documentID), { ...document }, { merge: this.isMerge }).then(() => {
-                if (this.debug) console.log(`"Document ${documentID} successfully written!"`);
-                return true;
+    uploadFile(file, fileName) {
+        return new Promise((resolve, reject) => {
+            if (arguments.length !== 2) reject("Must provide file and fileName  2 arguments, " + arguments.length + " provided");
+            const storageRef = ref(this.storage, fileName);
+            uploadBytes(storageRef, file)
+                .then((snapshot) => {
+                    if (this.debug) console.log(`Uploadeding ${fileName}`);
+                    getDownloadURL(snapshot.ref).then((url) => {
+                        if (this.debug) console.log(`Uploaded ${fileName} successfully, url:`, url);
+                        resolve(url);
+                    });
+                })
+                .catch((error) => {
+                    if (this.debug) console.log(error.code, error.message);
+                    reject(error);
+                });
+        })
+    }
+
+    uploadFileWithRandomName(file, fileName) {
+        return new Promise((resolve, reject) => {
+            const timeStamp = Date.now().toString();
+            this.uploadFile(file, timeStamp + fileName).then((url) => {
+                resolve(url);
             }).catch((error) => {
-                console.error(`Error writing document: ${documentID}`, error);
-                return false;
+                if (this.debug) console.log(error.code, error.message);
+                reject(error);
             });
+        })
+    }
+
+    deleteFile(fileName) {
+        return new Promise((resolve, reject) => {
+            if (arguments.length !== 1) reject("Must provide fileName as 1 argument, " + arguments.length + " provided");
+            const desertRef = ref(this.storage, fileName);
+            deleteObject(desertRef).then(() => {
+                if (this.debug) console.log("File deleted successfully");
+                resolve(true);
+            }).catch((error) => {
+                if (this.debug) console.log(error.code, error.message);
+                reject(error);
+            });
+        })
+    }
+
+    async getAllImages() {
+        let images = {};
+        const listRef = ref(this.storage, "/");
+        let res = await listAll(listRef);
+        console.log(res.items);
+        for (let itemRef of res.items) {
+            let url = await getDownloadURL(itemRef);
+            let name = itemRef._location.path_;
+            console.log(name);
+            images[name] = url;
         }
-        else {
-            throw new Error("Invalid number of arguments, expected 2 or 3, got " + arguments.length);
-        }
-    }
-
-    async readCollection(collectionName) {
-        if (arguments.length !== 1) throw new Error("Invalid number of arguments, expected 1, got " + arguments.length);
-        if (this.validate(collectionName) !== "string") throw new Error("Invalid collection name, expected string, got " + typeof collection);
-
-        try {
-            const querySnapshot = await getDocs(collection(this.db, collectionName));
-            const data = this.snapshotToObj(querySnapshot);
-            if (this.debug) console.log(`collect ${collectionName} data: `, data);
-            return data;
-        } catch (error) {
-            console.error(`Error reading collection: ${collectionName}`, error);
-            return null;
-        }
-    }
-
-    async readDocument(collectionName, documentID) {
-        if (arguments.length !== 2) throw new Error("Invalid number of arguments, expected 2, got " + arguments.length);
-        if (this.validate(collectionName) !== "string") throw new Error("Invalid collection name, expected string, got " + typeof collection);
-
-        documentID = documentID.toString();
-        if (this.validate(documentID) !== "string") throw new Error("Invalid documentID, expected string, got " + typeof documentID);
-
-        const docRef = doc(this.db, collectionName, documentID);
-
-        let docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-            if (this.debug) console.log(`Document ${documentID} data:`, docSnap.data());
-            return docSnap.data();
-        } else {
-            if (this.debug) console.log(`No such document ${documentID}!`);
-            return null;
-        }
-
-    }
-
-    async query(collectionName, queries, order) {
-        if (arguments.length !== 2 && arguments.length !== 3) throw new Error("Invalid number of arguments, expected 2 or 3, got " + arguments.length);
-        if (this.validate(collectionName) !== "string") throw new Error("Invalid collection name, expected string, got " + typeof collection);
-        if (this.validate(queries) !== "object") throw new Error("Invalid queries, expected object, got " + typeof queries);
-
-        if (arguments.length === 3) {
-            if (this.validate(order) !== "object") throw new Error("Invalid order, expected object, got " + typeof order);
-        }
-
-        let q;
-
-        if (arguments.length === 2) {
-            let queriesList = []
-            for (let qurey of queries) {
-                queriesList.push(where(qurey[0], qurey[1], qurey[2]));
-                q = query(collection(this.db, collectionName), ...queriesList);
-            }
-        } else if (arguments.length === 3) {
-            let queriesList = []
-            for (let qurey of queries) {
-                queriesList.push(where(qurey[0], qurey[1], qurey[2]));
-                q = query(collection(this.db, collectionName), ...queriesList, orderBy(order[0], order[1]));
-            }
-        }
-
-
-
-        // 1. bacic query
-        // const q = query(collection(this.db, "users"), where("id", "==", "1111"));
-        //const q = query(collection(this.db, "users"), where("age", ">=", 20));
-
-        // 2. compound  query
-        //const q = query(collection(this.db, "users"), where("age", ">=", 20), where("age", "<=", 30));
-        //const q = query(collection(this.db, collectionName), where("name", "in", ["innis", "用户4"]));
-
-        // 3. array-contains query
-        //const q = query(collection(this.db, "users"), where("list", "array-contains", 1));
-        //const q = query(collection(this.db, "users"), where("list", "array-contains-any", [1, 2]));
-
-
-
-        const querySnapshot = await getDocs(q);
-        const data = this.snapshotToArray(querySnapshot);
-        if (this.debug) console.log(`collect ${collectionName} data: `, data);
-        return data;
-
-    }
-
-    async delete(collectionName, documentID) {
-        if (arguments.length !== 2) throw new Error("Invalid number of arguments, expected 2, got " + arguments.length);
-        if (this.validate(collectionName) !== "string") throw new Error("Invalid collection name, expected string, got " + typeof collection);
-
-        documentID = documentID.toString();
-        if (this.validate(documentID) !== "string") throw new Error("Invalid documentID, expected string, got " + typeof documentID);
-
-        deleteDoc(doc(this.db, collectionName, documentID)).then(() => {
-            if (this.debug) console.log(`Document ${documentID} successfully deleted!`);
-            return true;
-        }).catch((error) => {
-            console.error(`Error removing document: ${documentID}`, error);
-            return false;
-        });
-    }
-
-    async update(collectionName, document, documentID) {
-        if (documentID === undefined) documentID = ""; else documentID = documentID.toString();
-        this.validateThreeParams(collectionName, document, documentID);
-
-        const docRef = doc(this.db, collectionName, documentID);
-
-        // Set the "capital" field of the city 'DC'
-        updateDoc(docRef, { ...document }).then(() => {
-            if (this.debug) console.log("Document successfully updated!");
-            return true;
-        }).catch((error) => {
-            console.error(`Error updating document: ${documentID}`, error);
-            return false;
-        });
-    }
-
-    getServerTimestamp() {
-        return serverTimestamp();
-    }
-
-    validate(param) {
-        // is param is an object
-        if (typeof param === "object") return "object";
-
-        // is param is a string
-        if (typeof param === "string") return "string";
-    }
-
-    validateThreeParams(collectionName, document, documentID) {
-        if (arguments.length !== 3) throw new Error("Invalid number of arguments, expected 3, got " + arguments.length);
-
-        if (this.validate(collectionName) !== "string") throw new Error("Invalid collection name, expected string, got " + typeof collection);
-
-        if (this.validate(document) !== "object") throw new Error("Invalid document, expected object, got " + typeof document);
-
-        if (this.validate(documentID) !== "string") throw new Error("Invalid documentID, expected string, got " + typeof documentID);
-    }
-
-    snapshotToObj(snapshot) {
-        const obj = {};
-        snapshot.forEach(doc => {
-            obj[doc.id] = doc.data();
-        });
-        return obj;
-    }
-
-    snapshotToArray(snapshot) {
-        const arr = [];
-        snapshot.forEach(doc => {
-            arr.push(doc.data());
-        });
-        return arr;
+        return new Promise((resolve, reject) => {
+            resolve(images);
+        })
     }
 }
 

@@ -61,8 +61,9 @@ async function clickEvent() {
 document.getElementById("btn").addEventListener("click", clickEvent);
 
 
+////////////////////////// storeHandler.js //////////////////////////
 
-
+// region storeHandler.js
 
 let email = document.getElementById("email-au").value;
 let password = document.getElementById("password-au").value;
@@ -192,3 +193,49 @@ function reauthenticate() {
     });
 }
 document.getElementById("btn-au-reAu").addEventListener("click", reauthenticate);
+
+// endregion storeHandler.js
+
+
+////////////////////////// storageHandler.js //////////////////////////
+// region storageHandler.js
+
+
+let files
+document.getElementById("file-input").addEventListener("change", (e) => {
+    // just image
+    files = e.target.files;
+});
+
+document.getElementById("btn-st").addEventListener("click", () => {
+    let storage = new FBStorage();
+    storage.debug = true;
+
+    for (let file of files) {
+        storage.uploadFile(file, file.name).then((url) => {
+            console.log(url);
+        }).catch((error) => {
+            console.log(error);
+        });
+    }
+});
+
+document.getElementById("btn-st-del").addEventListener("click", () => {
+    let storage = new FBStorage();
+    storage.debug = true;
+    storage.deleteFile("123456.jpg").then((res) => {
+        if (res) console.log("delete file success");
+    }).catch((error) => {
+        console.log(error);
+    });
+});
+
+document.getElementById("btn-st-getAll").addEventListener("click", () => {
+    let storage = new FBStorage();
+    storage.debug = true;
+    storage.getAllImages().then((images) => {
+        console.log(images);
+    }).catch((error) => {
+        console.log(error);
+    });
+});
