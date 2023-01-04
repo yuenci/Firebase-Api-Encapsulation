@@ -24,7 +24,7 @@ export class FBAuth {
                 .then((userCredential) => {
                     // Signed in
                     const user = userCredential.user;
-                    if (this.debug) console.log("user", user);
+                    if (this.debug) console.log(`user ${user.email}:`, user);
                     resolve(user);
                 })
                 .catch((error) => {
@@ -50,12 +50,12 @@ export class FBAuth {
 
     sendEmailVerification() {
         return new Promise((resolve, reject) => {
-            if (this.auth.currentUser === null) reject("Must be logged in to send email verification");
+            if (!this.ifCurrentUserLoggedIn(reject,)) reject("Must be logged in to send email verification");
             if (this.auth.currentUser.emailVerified) reject("Email already verified");
 
             sendEmailVerification(this.auth.currentUser)
                 .then(() => {
-                    if (this.debug) console.log("send email verification");
+                    if (this.debug) console.log("send email verification to user" + this.auth.currentUser.email);
                     resolve(true);
                 })
                 .catch((error) => {
@@ -69,7 +69,7 @@ export class FBAuth {
         return new Promise((resolve, reject) => {
             sendPasswordResetEmail(this.auth, email)
                 .then(() => {
-                    if (this.debug) console.log("send password reset email");
+                    if (this.debug) console.log("send password reset email to user" + email);
                     resolve(true);
                 })
                 .catch((error) => {
@@ -81,14 +81,11 @@ export class FBAuth {
 
     updatePassword(newPassword) {
         return new Promise((resolve, reject) => {
-            if (this.auth.currentUser === null) {
-                if (this.debug) console.log("Must be logged in to update password");
-                reject("Must be logged in to update password")
-            };
+            if (!this.ifCurrentUserLoggedIn(reject,)) reject("Must be logged in to update password");
             const user = this.auth.currentUser;
             updatePassword(user, newPassword)
                 .then(() => {
-                    if (this.debug) console.log("update password");
+                    if (this.debug) console.log("update password for user" + user.email);
                     resolve(true);
                 })
                 .catch((error) => {
@@ -100,8 +97,9 @@ export class FBAuth {
 
     logout() {
         return new Promise((resolve, reject) => {
+            const user = this.auth.currentUser;
             this.auth.signOut().then(() => {
-                if (this.debug) console.log("Sign out");
+                if (this.debug) console.log(`User ${user.email} sign out`);
                 resolve(true);
             }).catch((error) => {
                 if (this.debug) console.log(error.code, error.message);
@@ -112,10 +110,7 @@ export class FBAuth {
 
     getUserInfo() {
         return new Promise((resolve, reject) => {
-            if (this.auth.currentUser === null) {
-                if (this.debug) console.log("Must be logged in to get user info");
-                reject("Must be logged in to get user info")
-            };
+            if (!this.ifCurrentUserLoggedIn(reject,)) reject("Must be logged in to get user info");
             const user = this.auth.currentUser;
             const data = {
                 uid: user.uid,
@@ -125,21 +120,18 @@ export class FBAuth {
                 phoneNumber: user.phoneNumber,
                 photoURL: user.photoURL,
             };
-            if (this.debug) console.log(data);
+            if (this.debug) console.log(`User ${data.email}:`, data);
             resolve(data);
         });
     }
 
     updateUserInfo(newData) {
         return new Promise((resolve, reject) => {
-            if (this.auth.currentUser === null) {
-                if (this.debug) console.log("Must be logged in to update user info");
-                reject("Must be logged in to update user info")
-            };
+            if (!this.ifCurrentUserLoggedIn(reject,)) reject("Must be logged in to update user info");
             const user = this.auth.currentUser;
             updateProfile(user, newData)
                 .then(() => {
-                    if (this.debug) console.log("update user info");
+                    if (this.debug) console.log(`update user ${user.email} info`);
                     resolve(true);
                 })
                 .catch((error) => {
@@ -151,14 +143,11 @@ export class FBAuth {
 
     updateUserEmail(newEmail) {
         return new Promise((resolve, reject) => {
-            if (this.auth.currentUser === null) {
-                if (this.debug) console.log("Must be logged in to update user email");
-                reject("Must be logged in to update user email")
-            };
+            if (!this.ifCurrentUserLoggedIn(reject,)) reject("Must be logged in to update user email");
             const user = this.auth.currentUser;
             user.updateEmail(newEmail)
                 .then(() => {
-                    if (this.debug) console.log("update user email");
+                    if (this.debug) console.log(`update user ${user.email} email`);
                     resolve(true);
                 })
                 .catch((error) => {
@@ -170,15 +159,11 @@ export class FBAuth {
 
     deleteAccount() {
         return new Promise((resolve, reject) => {
-            if (!this.ifCurrentUserLoggedIn()) reject("Must be logged in to re-authenticate")
-            if (this.auth.currentUser === null) {
-                if (this.debug) console.log("Must be logged in to delete user");
-                reject("Must be logged in to delete user")
-            };
+            if (!this.ifCurrentUserLoggedIn(reject,)) reject("Must be logged in to delete user");
             const user = this.auth.currentUser;
             deleteUser(user)
                 .then(() => {
-                    if (this.debug) console.log("delete user");
+                    if (this.debug) console.log(`delete user ${user.email}`);
                     resolve(true);
                 })
                 .catch((error) => {
@@ -196,7 +181,7 @@ export class FBAuth {
             const credential = EmailAuthProvider.credential(user.email, password);
             reauthenticateWithCredential(user, credential)
                 .then(() => {
-                    if (this.debug) console.log("re-authenticate");
+                    if (this.debug) console.log(`re-authenticate` + user.email);
                     resolve(true);
                 })
                 .catch((error) => {
@@ -212,10 +197,6 @@ export class FBAuth {
             reject(prompt);
         }
     }
-
-
-    // use functio to validate current user
-    // give log more info
 }
 
 

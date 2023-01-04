@@ -77,6 +77,7 @@ const fbAuth = new FBAuth();
 fbAuth.debug = true;
 function register() {
     // register
+    getEmailAndPassword();
     fbAuth.register(email, password).then((user) => {
         console.log(user);
     }).catch((error) => {
