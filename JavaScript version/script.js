@@ -1,6 +1,6 @@
-import { FBStore } from "./storeHandle.js"
-import { FBStorage } from "./storageHandle.js";
-import { firebaseConfig } from "./config.js";
+import { FBStore } from "./scripts/storeHandler.js";
+import { FBStorage } from "./scripts/storageHandler.js";
+import { firebaseConfig } from "./scripts/config.js";
 
 
 async function clickEvent() {
@@ -16,8 +16,8 @@ async function clickEvent() {
 
     const fbStore = new FBStore(firebaseConfig);
     fbStore.debug = true;
-    let docid = await fbStore.write("users", user);
-    console.log(docid);
+    // let docid = await fbStore.write("users", user);
+    // console.log(docid);
 
     //fbStore.write("users", user, 333333);
 
@@ -36,6 +36,10 @@ async function clickEvent() {
     // let query = {
     //     age: [">=", 20]
     // }
+    let query = ["age", ">=", 20];
+    fbStore.query("users", query)
+
+
     // let queries = [["age", ">=", 20], ["age", "<=", 30]];
     // let order = ["age", "asc"];
     // fbStore.query("users", queries, order)

@@ -8,6 +8,8 @@ export class FBStore {
         this.db = getFirestore(this.app);
         this.isMerge = true; // true: merge / false: overwrite
         this.debug = false;
+        this.useCache = true;
+        this._cache = {};
     }
 
     async write(collectionName, document, documentID) {
@@ -42,12 +44,17 @@ export class FBStore {
         try {
             const querySnapshot = await getDocs(collection(this.db, collectionName));
             const data = this.snapshotToObj(querySnapshot);
+            if (this.useCache) this.cache[collectionName] = data;
             if (this.debug) console.log(`collect ${collectionName} data: `, data);
             return data;
         } catch (error) {
             console.error(`Error reading collection: ${collectionName}`, error);
             return null;
         }
+    }
+
+    get cache() {
+        return this._cache;
     }
 
     async readDocument(collectionName, documentID) {
@@ -137,6 +144,26 @@ export class FBStore {
         });
     }
 
+    async addNum(collectionName, documentID, fieldName, number) {
+        if (arguments.length !== 4) throw new Error("Invalid number of arguments, expected 4, got " + arguments.length);
+        this.validateThreeParams(collectionName, documentID, fieldName);
+        if (typeof number !== "number") throw new Error("Invalid number, expected number, got " + typeof number);
+
+        const docRef = doc(this.db, collectionName, documentID);
+
+        const data = {
+            [fieldName]: increment(1)
+        }
+
+        await updateDoc(docRef, data)
+
+        return true;
+    }
+
+    async addOne(collectionName, documentID, fieldName) {
+        addNum(collectionName, documentID, fieldName, 1)
+    }
+
     getServerTimestamp() {
         return serverTimestamp();
     }
@@ -177,3 +204,5 @@ export class FBStore {
 }
 
 
+// TODO 增加缓存机制，如果存在缓存，优先使用缓存
+// TODO 提供刷新缓存的方法
