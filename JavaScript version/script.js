@@ -233,7 +233,7 @@ document.getElementById("btn-st-del").addEventListener("click", () => {
 document.getElementById("btn-st-getAll").addEventListener("click", () => {
     let storage = new FBStorage();
     storage.debug = true;
-    storage.getAllImages().then((images) => {
+    storage.getAllFiles().then((images) => {
         console.log(images);
     }).catch((error) => {
         console.log(error);

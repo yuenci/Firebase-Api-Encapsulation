@@ -61,7 +61,7 @@ export class FBStorage {
         })
     }
 
-    async getAllImages() {
+    async getAllFiles() {
         let images = {};
         const listRef = ref(this.storage, "/");
         let res = await listAll(listRef);
