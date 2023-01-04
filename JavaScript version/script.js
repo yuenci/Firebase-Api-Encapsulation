@@ -99,8 +99,8 @@ document.getElementById("btn-au-lo").addEventListener("click", login);
 
 function sendVaildEmail() {
     //send email verification
-    fbAuth.sendEmailVerification().then(() => {
-        console.log("send email verification");
+    fbAuth.sendEmailVerification().then((res) => {
+        if (res) console.log("send email verification");
     }).catch((error) => {
         console.log(error);
     });
@@ -111,8 +111,8 @@ document.getElementById("btn-au-se").addEventListener("click", sendVaildEmail);
 function sendEmailResetMail() {
     //send email reset password
     getEmailAndPassword();
-    fbAuth.forgotPassword(email).then(() => {
-        console.log("send email reset password");
+    fbAuth.forgotPassword(email).then((res) => {
+        if (res) console.log("send email reset password");
     }).catch((error) => {
         console.log(error);
     });
@@ -121,8 +121,8 @@ document.getElementById("btn-au-ree").addEventListener("click", sendEmailResetMa
 
 function logout() {
     //logout
-    fbAuth.logout().then(() => {
-        console.log("logout");
+    fbAuth.logout().then((res) => {
+        if (res) console.log("logout");
     }).catch((error) => {
         console.log(error);
     });
@@ -148,8 +148,8 @@ function updateUserInfo() {
         photoURL: "https://utoolsfigurebed.oss-cn-hangzhou.aliyuncs.com/1.jpg",
     }
 
-    fbAuth.updateUserInfo(data).then(() => {
-        console.log("update user info");
+    fbAuth.updateUserInfo(data).then((user) => {
+        console.log(user);
     }).catch((error) => {
         console.log(error);
     });
@@ -161,8 +161,8 @@ function updatePassword() {
     getEmailAndPassword();
 
     //update password
-    fbAuth.updatePassword(password).then(() => {
-        console.log("update password");
+    fbAuth.updatePassword(password).then((res) => {
+        console.log(res);
     }
     ).catch((error) => {
         console.log(error);
@@ -172,8 +172,8 @@ document.getElementById("btn-au-pwd").addEventListener("click", updatePassword);
 
 function deleteAccount() {
     //delete account
-    fbAuth.deleteAccount().then(() => {
-        console.log("delete account");
+    fbAuth.deleteAccount().then((res) => {
+        if (res) console.log("delete account");
     }).catch((error) => {
         console.log(error);
     });
@@ -185,8 +185,8 @@ function reauthenticate() {
     getEmailAndPassword();
 
     //reauthenticate
-    fbAuth.reauthenticate(password).then(() => {
-        console.log("reauthenticate");
+    fbAuth.reauthenticate(password).then((res) => {
+        if (res) console.log("reauthenticate");
     }).catch((error) => {
         console.log(error);
     });

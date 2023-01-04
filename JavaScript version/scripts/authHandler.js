@@ -132,7 +132,7 @@ export class FBAuth {
             updateProfile(user, newData)
                 .then(() => {
                     if (this.debug) console.log(`update user ${user.email} info`);
-                    resolve(true);
+                    resolve(user);
                 })
                 .catch((error) => {
                     if (this.debug) console.log(error.code, error.message);
@@ -147,8 +147,8 @@ export class FBAuth {
             const user = this.auth.currentUser;
             user.updateEmail(newEmail)
                 .then(() => {
-                    if (this.debug) console.log(`update user ${user.email} email`);
-                    resolve(true);
+                    if (this.debug) console.log(`update user email to ${newEmail}`);
+                    resolve(`update successfully, new email: ${newEmail}`);
                 })
                 .catch((error) => {
                     if (this.debug) console.log(error.code, error.message);
