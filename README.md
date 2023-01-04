@@ -65,7 +65,7 @@ Alternatively, see the GitHub documentation on how to [create a pull request](ht
   <img src="https://github.com/yuenci/Laptop-Repair-Services-Management-System/blob/master/image/avatar-innis.png" alt="profile image" width="60px">
 </a>
 
-Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
+Innis - yuenci1575270674@gmail.com
 
 
 ## 😄 Be one of the contributors
