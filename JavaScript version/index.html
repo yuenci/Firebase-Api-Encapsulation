@@ -15,14 +15,55 @@
         button {
             margin: 10px;
         }
+
+        #container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        #fbStore,
+        #fbAuth,
+        #fbStorage {
+            margin: 20px;
+            width: 40%;
+            border: 1px solid black;
+        }
     </style>
 </head>
 
 <body>
-    <input type="text" placeholder="ID" id="id" value="1111">
-    <input type="text" placeholder="name" id="name" value="innis">
-    <input type="text" placeholder="password" id="password" value="123456">
-    <button id="btn">Submit</button>
+    <div id="container">
+        <div id="fbStore">
+            <input type="text" placeholder="ID" id="id" value="1111">
+            <input type="text" placeholder="name" id="name" value="innis">
+            <input type="text" placeholder="password" id="password" value="123456">
+            <button id="btn">Submit</button>
+        </div>
+        <div id="fbAuth">
+            <input type="email" placeholder="email" id="email-au">
+            <input type="text" placeholder="password" id="password-au">
+            <button id="btn-au-re">Register</button>
+            <button id="btn-au-lo">Login</button>
+            <button id="btn-au-se">Send valid</button>
+            <button id="btn-au-ree">Reset</button>
+            <button id="btn-au-out">Logout</button>
+            <button id="btn-au-get">Get infp</button>
+            <button id="btn-au-up">UpdateInfo</button>
+            <button id="btn-au-pwd">UpdatePwd</button>
+            <button id="btn-au-del">Delete</button>
+            <button id="btn-au-reAu">ReAuth</button>
+            <div>inniscloud@gmail.com</div>
+            <div>TP061418@mail.apu.edu.my</div>
+            <div>abc123</div>
+        </div>
+        <div id="fbStorage">
+            <input type="file">
+            <button id="btn-st">Submit</button>
+        </div>
+    </div>
+
 
     <script src="./script.js" type="module"></script>
 </body>

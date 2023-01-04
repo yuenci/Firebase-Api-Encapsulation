@@ -1,9 +1,14 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getFirestore, doc, setDoc, collection, addDoc, updateDoc, serverTimestamp, deleteDoc, getDoc, getDocs, where, query, orderBy }
     from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import firebaseConfig from "./config.js";
+
+// for npm
+// import { initializeApp } from "firebase/app";
+// import { getFirestore, doc, setDoc, collection, addDoc, updateDoc, serverTimestamp, deleteDoc, getDoc, getDocs, where, query, orderBy } from "firebase/firestore";
 
 export class FBStore {
-    constructor(firebaseConfig) {
+    constructor() {
         this.app = initializeApp(firebaseConfig);
         this.db = getFirestore(this.app);
         this.isMerge = true; // true: merge / false: overwrite
