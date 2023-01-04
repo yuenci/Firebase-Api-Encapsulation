@@ -156,7 +156,7 @@ export class FBStore {
 
         return new Promise((resolve, reject) => {
             updateDoc(docRef, { ...document }).then(() => {
-                if (this.debug) console.log("Document successfully updated!");
+                if (this.debug) console.log(`Document successfully ${documentID} updated!`);
                 resolve(true);
             }).catch((error) => {
                 console.error(`Error updating document: ${documentID}`, error);
@@ -188,6 +188,17 @@ export class FBStore {
 
     addOne(collectionName, documentID, fieldName) {
         return addNum(collectionName, documentID, fieldName, 1)
+    }
+
+    getCache(collectionName) {
+        return new Promise((resolve, reject) => {
+            if (this.cache[collectionName] !== undefined) {
+                if (this.debug) console.log(`collect ${collectionName} data: `, this.cache[collectionName]);
+                resolve(this.cache[collectionName]);
+            } else {
+                reject(`No such collection ${collectionName}!`);
+            }
+        });
     }
 
     getServerTimestamp() {

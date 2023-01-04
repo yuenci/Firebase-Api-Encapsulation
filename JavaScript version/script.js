@@ -22,13 +22,13 @@ async function clickEvent() {
     // console.log(docid);
 
     // write to firestore with documentID
-    //fbStore.write("users", user, 333333);
+    //fbStore.write("users", user, 4444);
 
     // update document
-    // fbStore.update("users", user, 333333);
+    //fbStore.update("users", user, 333333);
 
     // delete document
-    // fbStore.delete("users", 1111);
+    //fbStore.delete("users", 4444);
 
     // read document
     // fbStore.readDocument("users", 333333).then((data) => {
@@ -51,10 +51,15 @@ async function clickEvent() {
     // fbStore.query("users", queries, order)
 
     // use cache
-    // fbStore.readCollection("users").then((data) => {
-    //     console.log("data", data);
-    //     console.log("cache", fbStore.cache.users);
+    // fbStore.readCollection("users").then(() => {
+    //     fbStore.getCache("users").then((data) => {
+    //         console.log(data);
+    //     });
     // });
+
+    fbStore.getCache("users").then((data) => {
+        console.log(data);
+    });
 
 }
 
