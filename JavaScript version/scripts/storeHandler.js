@@ -187,7 +187,7 @@ export class FBStore {
     }
 
     addOne(collectionName, documentID, fieldName) {
-        return addNum(collectionName, documentID, fieldName, 1)
+        return this.addNum(collectionName, documentID, fieldName, 1)
     }
 
     getCache(collectionName) {
