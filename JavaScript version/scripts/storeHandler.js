@@ -173,7 +173,7 @@ export class FBStore {
         const docRef = doc(this.db, collectionName, documentID);
 
         const data = {
-            [fieldName]: increment(1)
+            [fieldName]: increment(number)
         }
         return new Promise((resolve, reject) => {
             updateDoc(docRef, data).then(() => {
