@@ -7,9 +7,11 @@ import {
 import firebaseConfig from "./config.js";
 
 
-// for npm
-// import { initializeApp } from 'firebase/app'
-// import { getAuth, sendSignInLinkToEmail, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+// For npm
+/*
+import { initializeApp } from 'firebase/app'
+import { getAuth, sendSignInLinkToEmail, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+*/
 
 export class FBAuth {
     constructor() {

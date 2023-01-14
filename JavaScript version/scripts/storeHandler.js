@@ -4,8 +4,10 @@ import { getFirestore, doc, setDoc, collection, addDoc, updateDoc, serverTimesta
 import firebaseConfig from "./config.js";
 
 // for npm
-// import { initializeApp } from "firebase/app";
-// import { getFirestore, doc, setDoc, collection, addDoc, updateDoc, serverTimestamp, deleteDoc, getDoc, getDocs, where, query, orderBy } from "firebase/firestore";
+/*
+import { initializeApp } from "firebase/app";
+import { getFirestore, doc, setDoc, collection, addDoc, updateDoc, serverTimestamp, deleteDoc, getDoc, getDocs, where, query, orderBy } from "firebase/firestore";
+*/
 
 export class FBStore {
     constructor() {

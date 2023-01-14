@@ -5,8 +5,10 @@ import firebaseConfig from "./config.js";
 
 
 // for npm
-// import { initializeApp } from 'firebase/app'
-// import { getStorage  } from "firebase/storage";
+/*
+import { initializeApp } from 'firebase/app'
+import { getStorage  } from "firebase/storage";
+*/
 
 export class FBStorage {
     constructor() {
