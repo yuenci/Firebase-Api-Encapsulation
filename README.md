@@ -68,10 +68,6 @@ Alternatively, see the GitHub documentation on how to [create a pull request](ht
 Innis - yuenci1575270674@gmail.com
 
 
-## 😄 Be one of the contributors
-
-Want to be part of this project? Click HERE and read how to contribute.
-
 ## 📝 License
 
 This project is under license. See the [LICENSE](./LICENSE) file for more details.

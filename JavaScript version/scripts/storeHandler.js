@@ -169,13 +169,15 @@ export class FBStore {
 
     addNum(collectionName, documentID, fieldName, number) {
         if (arguments.length !== 4) throw new Error("Invalid number of arguments, expected 4, got " + arguments.length);
-        this.validateThreeParams(collectionName, documentID, fieldName);
+        if (this.validate(collectionName) !== "string") throw new Error("Invalid collection name, expected string, got " + typeof collection);
+        if (this.validate(documentID) !== "string") throw new Error("Invalid documentID, expected string, got " + typeof documentID);
+        if (this.validate(fieldName) !== "string") throw new Error("Invalid fieldName, expected string, got " + typeof fieldName);
         if (typeof number !== "number") throw new Error("Invalid number, expected number, got " + typeof number);
 
         const docRef = doc(this.db, collectionName, documentID);
 
         const data = {
-            [fieldName]: increment(1)
+            [fieldName]: increment(number)
         }
         return new Promise((resolve, reject) => {
             updateDoc(docRef, data).then(() => {
@@ -189,7 +191,7 @@ export class FBStore {
     }
 
     addOne(collectionName, documentID, fieldName) {
-        return addNum(collectionName, documentID, fieldName, 1)
+        return this.addNum(collectionName, documentID, fieldName, 1)
     }
 
     getCache(collectionName) {
