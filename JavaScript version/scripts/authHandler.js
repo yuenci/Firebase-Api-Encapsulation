@@ -199,6 +199,20 @@ export class FBAuth {
             reject(prompt);
         }
     }
+
+    getCurrentUser() {
+        return new Promise((resolve, reject) => {
+            onAuthStateChanged(this.auth, (user) => {
+                if (user) {
+                    if (this.debug) console.log("user logged in");
+                    resolve(user);
+                } else {
+                    if (this.debug) console.log("user not logged in");
+                    reject(null);
+                }
+            });
+        });
+    }
 }
 
 
