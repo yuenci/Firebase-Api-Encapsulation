@@ -1,4 +1,4 @@
-`<a name="readme-top"></a>`
+<a name="readme-top"></a>
 
 <!-- 0101-Firebase Api Encapsulation -->
 # Readme-Template-Light
