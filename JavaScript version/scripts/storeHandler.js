@@ -132,6 +132,43 @@ export class FBStore {
         });
     }
 
+    async queryTime(collectionName, queries) {
+    let q;
+    if (queries.length === 3) {
+      // simple query
+      q = query(collection(this.db, collectionName), where(...queries));
+
+      const querySnapshot = await getDocs(q);
+      let res = [];
+      querySnapshot.forEach((doc) => {
+        res.push({ ...doc.data(), id: doc.id });
+      });
+      return res;
+    }
+
+    if (queries.length === 2) {
+      // range query
+      let q1 = query(collection(this.db, collectionName), where(...queries[0]));
+      let q2 = query(collection(this.db, collectionName), where(...queries[1]));
+
+      let results = await Promise.all([getDocs(q1), getDocs(q2)]);
+      const startDocs = results[0].docs;
+      const endDocs = results[1].docs;
+      const mergedDocs = startDocs.filter((doc) =>
+        endDocs.some((endDoc) => doc.id === endDoc.id)
+      );
+      let res = [];
+      mergedDocs.forEach((qs) => {
+        qs.forEach((doc) => {
+          // console.log(doc.id, " => ", doc.data());
+          doc.data().id = doc.id;
+          res.push(doc.data());
+        });
+      });
+      return res;
+    }
+  }
+
     delete(collectionName, documentID) {
         if (arguments.length !== 2) throw new Error("Invalid number of arguments, expected 2, got " + arguments.length);
         if (this.validate(collectionName) !== "string") throw new Error("Invalid collection name, expected string, got " + typeof collection);
